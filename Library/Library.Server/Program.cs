@@ -6,8 +6,12 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//builder.Services.AddDbContext<LibraryDbContext>(options =>
+//    options.UseMySQL(builder.Configuration.GetConnectionString("Library")!)
+//);
+
 builder.Services.AddDbContext<LibraryDbContext>(options =>
-    options.UseMySQL(builder.Configuration.GetConnectionString("Library")!)
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgre")!)
 );
 
 var mapperConfig = new MapperConfiguration(config => config.AddProfile(new MappingProfile()));
@@ -23,6 +27,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 if (app.Environment.IsDevelopment())
 {

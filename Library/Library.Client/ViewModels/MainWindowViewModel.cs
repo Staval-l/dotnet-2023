@@ -186,13 +186,59 @@ public class MainWindowViewModel : ViewModelBase
             Readers.Remove(SelectedReader);
         }, this.WhenAnyValue(vm => vm.SelectedReader).Select(selectReader => selectReader != null));
 
-        RxApp.MainThreadScheduler.Schedule(LoadBooksAsync);
-        RxApp.MainThreadScheduler.Schedule(LoadCardsAsync);
-        RxApp.MainThreadScheduler.Schedule(LoadDepartmentsAsync);
-        RxApp.MainThreadScheduler.Schedule(LoadReadersAsync);
-        RxApp.MainThreadScheduler.Schedule(LoadTypesEditionsAsync);
-        RxApp.MainThreadScheduler.Schedule(LoadTypesDepartmentsAsync);
-        RxApp.MainThreadScheduler.Schedule(LoadAllBooksAsync);
+        RxApp.MainThreadScheduler.Schedule(LoadData);
+        //RxApp.MainThreadScheduler.Schedule(LoadCardsAsync);
+        //RxApp.MainThreadScheduler.Schedule(LoadDepartmentsAsync);
+        //RxApp.MainThreadScheduler.Schedule(LoadReadersAsync);
+        //RxApp.MainThreadScheduler.Schedule(LoadTypesEditionsAsync);
+        //RxApp.MainThreadScheduler.Schedule(LoadTypesDepartmentsAsync);
+        //RxApp.MainThreadScheduler.Schedule(LoadAllBooksAsync);
+    }
+
+    private async void LoadData()
+    {
+        AllBooks.Clear();
+        var booksRequest = await _apiClient.GetAllBooksAsync();
+        foreach (var book in booksRequest)
+        {
+            AllBooks.Add(_mapper.Map<BookViewModel>(book));
+        }
+
+        var books = await _apiClient.GetBooksAsync();
+        foreach (var book in books)
+        {
+            Books.Add(_mapper.Map<BookViewModel>(book));
+        }
+
+        var cards = await _apiClient.GetCardsAsync();
+        foreach (var card in cards)
+        {
+            Cards.Add(_mapper.Map<CardViewModel>(card));
+        }
+
+        var departments = await _apiClient.GetDepartmentsAsync();
+        foreach (var department in departments)
+        {
+            Departments.Add(_mapper.Map<DepartmentViewModel>(department));
+        }
+
+        var readers = await _apiClient.GetReadersAsync();
+        foreach (var reader in readers)
+        {
+            Readers.Add(_mapper.Map<ReaderViewModel>(reader));
+        }
+
+        var types = await _apiClient.GetTypeEditionsAsync();
+        foreach (var type in types)
+        {
+            TypesEditions.Add(_mapper.Map<TypeEditionViewModel>(type));
+        }
+
+        var typesDep = await _apiClient.GetTypeDepartmentsAsync();
+        foreach (var type in typesDep)
+        {
+            TypesDepartments.Add(_mapper.Map<TypeDepartmentViewModel>(type));
+        }
     }
 
     private async void LoadAllBooksAsync()
